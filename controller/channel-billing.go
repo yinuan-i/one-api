@@ -391,9 +391,9 @@ func updateAllChannelsBalance() error {
 			continue
 		}
 		// TODO: support Azure
-		if channel.Type != channeltype.OpenAI && channel.Type != channeltype.Custom {
-			continue
-		}
+		// if channel.Type != channeltype.OpenAI && channel.Type != channeltype.Custom {
+		// 	continue
+		// }
 		balance, err := updateChannelBalance(channel)
 		if err != nil {
 			continue
@@ -409,14 +409,14 @@ func updateAllChannelsBalance() error {
 }
 
 func UpdateAllChannelsBalance(c *gin.Context) {
-	//err := updateAllChannelsBalance()
-	//if err != nil {
-	//	c.JSON(http.StatusOK, gin.H{
-	//		"success": false,
-	//		"message": err.Error(),
-	//	})
-	//	return
-	//}
+	err := updateAllChannelsBalance()
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
