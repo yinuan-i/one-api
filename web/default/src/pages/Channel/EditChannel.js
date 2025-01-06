@@ -120,7 +120,73 @@ const EditChannel = () => {
       showError(error.message);
     }
   };
+  const fetchUpstreamModelList = async (name) => {
+    setLoading(true);
+    let err = false;
 
+    if (isEdit) {
+      // 如果是编辑模式，使用已有的 channel id 获取模型列表
+      const res = await API.get('/api/channel/fetch_models/' + channelId);
+      if (res.data && res.data?.success) {
+        const models = res.data.data;
+        const modelOptions = models.map((model) => ({
+          key: model,
+          text: model,
+          value: model,
+        }));
+
+        setInputs((prevInputs) => ({
+          ...prevInputs,
+          models: models,
+        }));
+        setModelOptions(modelOptions);
+      } else {
+        err = true;
+      }
+    } else {
+      // 如果是新建模式，通过后端代理获取模型列表
+      if (!inputs?.['key']) {
+        showError('请填写密钥');
+        err = true;
+      } else {
+        try {
+          const res = await API.post('/api/channel/fetch_models', {
+            type: inputs.type,
+            base_url: inputs['base_url'],
+            key: inputs['key'],
+          });
+
+          if (res.data && res.data.success) {
+            const models = res.data.data;
+            const modelOptions = models.map((model) => ({
+              key: model,
+              text: model,
+              value: model,
+            }));
+
+            // 直接设置 inputs.models 和 modelOptions
+            setInputs((prevInputs) => ({
+              ...prevInputs,
+              models: models,
+            }));
+            setModelOptions(modelOptions);
+          } else {
+            err = true;
+          }
+        } catch (error) {
+          console.error('Error fetching models:', error);
+          err = true;
+        }
+      }
+    }
+
+    if (!err) {
+      showSuccess('获取模型列表成功');
+    } else {
+      showError('获取模型列表失败');
+    }
+    setLoading(false);
+  };
   const fetchGroups = async () => {
     try {
       let res = await API.get(`/api/group/`);
@@ -403,6 +469,14 @@ const EditChannel = () => {
                 <Button type={'button'} onClick={() => {
                   handleInputChange(null, { name: 'models', value: fullModels });
                 }}>填入所有模型</Button>
+                <Button
+                  type={'button'}
+                  onClick={() => {
+                    fetchUpstreamModelList('models');
+                  }}
+                >
+                  获取所有模型
+                </Button>
                 <Button type={'button'} onClick={() => {
                   handleInputChange(null, { name: 'models', value: [] });
                 }}>清除所有模型</Button>
