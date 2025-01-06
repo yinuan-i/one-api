@@ -186,7 +186,7 @@ const Header = () => {
   return (
     <>
       <Menu borderless style={{ borderTop: 'none' }}>
-        <Container>
+        <Container style={{width: '80%', maxWidth: '1200px'}}>
           <Menu.Item as={Link} to='/' className={'hide-on-mobile'}>
             <img src={logo} alt='logo' style={{ marginRight: '0.75em' }} />
             <div style={{ fontSize: '20px' }}>
