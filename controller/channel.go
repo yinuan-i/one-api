@@ -192,7 +192,10 @@ func FetchModels(c *gin.Context) {
 		return
 	}
 
-	baseURL := channeltype.ChannelBaseURLs[req.Type]
+	baseURL := req.BaseURL
+	if baseURL == "" {
+		baseURL = channeltype.ChannelBaseURLs[req.Type]
+	}
 
 	client := &http.Client{}
 	url := fmt.Sprintf("%s/v1/models", baseURL)
