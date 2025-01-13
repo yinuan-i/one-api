@@ -29,32 +29,9 @@ export default function ChannelPage() {
   const [searching, setSearching] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const theme = useTheme();
-  const [orderBy, setOrderBy] = useState('id');
-  const [order, setOrder] = useState('asc');
-
   const matchUpMd = useMediaQuery(theme.breakpoints.up('sm'));
   const [openModal, setOpenModal] = useState(false);
   const [editChannelId, setEditChannelId] = useState(0);
-
-// 在父组件中添加排序处理函数
-  const handleRequestSort = (field) => {
-    const isAsc = orderBy === field && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(field);
-
-    // 对数据进行排序
-    const sortedChannels = [...channels].sort((a, b) => {
-      const aValue = field === 'id' ? a.id : parseFloat(a.balance) || 0;
-      const bValue = field === 'id' ? b.id : parseFloat(b.balance) || 0;
-
-      if (isAsc) {
-        return bValue - aValue;
-      }
-      return aValue - bValue;
-    });
-
-    setChannels(sortedChannels);
-  };
 
   const loadChannels = async (startIdx) => {
     setSearching(true);
@@ -279,11 +256,7 @@ export default function ChannelPage() {
         <PerfectScrollbar component="div">
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <ChannelTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={handleRequestSort}
-              />
+              <ChannelTableHead />
               <TableBody>
                 {channels.slice(activePage * ITEMS_PER_PAGE, (activePage + 1) * ITEMS_PER_PAGE).map((row) => (
                   <ChannelTableRow
